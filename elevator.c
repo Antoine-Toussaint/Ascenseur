@@ -78,8 +78,8 @@ void stepElevator(Building *b)
         *(b->waitingLists + currentFloor) = enterElevator(b->elevator, *(b->waitingLists) + currentFloor);
     }
     else if(currentFloor > b->elevator->targetFloor){
-        b->elevator->targetFloor--;
+        b->elevator->currentFloor--;
     }else{
-        b->elevator->targetFloor++;
+        b->elevator->currentFloor++;
     }
 }

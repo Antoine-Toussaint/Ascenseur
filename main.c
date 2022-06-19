@@ -77,6 +77,7 @@ PersonList **waitingLists = malloc(nbFloor*sizeof(PersonList*));
   int capacity = 3;
   int currentFloor = 0;
   Elevator *elevator = create_elevator(capacity, currentFloor , NULL);
+  //ADDED FOR DEBUG 
   Building *building = create_building(nbFloor, elevator, waitingLists);
 
   // Initialize ncurse display
