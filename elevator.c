@@ -24,44 +24,85 @@ Building *create_building(int nbFloor, Elevator *elevator, PersonList **waitingL
 
 PersonList *exitElevator(Elevator *e)
 {
+    // PersonList *personsLeaving = NULL;
+    // PersonList *personsRemaining = NULL;
+    // PersonList *explorator = e->persons;
+
+    // while (explorator)
+    // {
+    //     if (explorator->person->dest == e->currentFloor)
+    //     {
+    //         personsLeaving = insert(explorator->person, personsLeaving);
+    //     }
+    //     else{
+    //         personsRemaining = insert(explorator->person, personsRemaining);
+    //     }
+
+    //     explorator = explorator->next;
+    // }
+
+    // e->persons = personsRemaining;
+
+    // return personsLeaving;
+
     PersonList *personsLeaving = NULL;
-    PersonList *personsRemaining = NULL;
+    //this permits to not re-create the list of persons remainingat each call
+    //instead, it 'cuts' the lists of persons in the elevator,
+    //leaving only the ones who are remaining
+    //see the else in the succeding else of the while
+    PersonList *lastSeenPersonRemaining = NULL;
+    PersonList *firstPersonRemaining = NULL;
+
     PersonList *explorator = e->persons;
 
     while (explorator)
     {
         if (explorator->person->dest == e->currentFloor)
         {
-            insert(explorator->person, personsLeaving);
+            personsLeaving = insert(explorator->person, personsLeaving);
+
+            explorator = explorator->next;
         }
         else{
-            insert(explorator->person, personsRemaining);
-        }
+            if(lastSeenPersonRemaining)
+            {
+                lastSeenPersonRemaining->next = explorator;
+                lastSeenPersonRemaining = explorator;
+            }else{
+                lastSeenPersonRemaining = explorator;
+                firstPersonRemaining = explorator;
+            }
 
-        explorator = explorator->next;
+            //cycling through persons in the elevator
+            explorator = explorator->next;
+            //cutting link between persons remaining and not yet treated persons in the elevator
+            lastSeenPersonRemaining->next = NULL;
+        }
     }
 
-    e->persons = personsRemaining;
+    e->persons = firstPersonRemaining;
 
     return personsLeaving;
 }
 
+//FIXME segmentation fault. can be in exitElevator too
 PersonList* enterElevator(Elevator *e, PersonList *waitingList)
 {
-    //calculating first how many persons are currently in the elevator
+    // //calculating first how many persons are currently in the elevator
     int occupation = 0;
-    PersonList *occupants = e->persons;
-    while(occupants)
+    PersonList *occupant = e->persons;
+    while(occupant)
     {
         occupation++;
-        occupants = occupants->next;
+        occupant = occupant->next;
     }
 
     //then making people on the waiting list enter the escalator
     while(occupation < e->capacity && waitingList)
     {
-        insert(waitingList->person, e->persons);
+        e->persons = insert(waitingList->person, e->persons);
         waitingList = waitingList->next;
+        occupation++;
     }
 
     return waitingList;
@@ -75,7 +116,7 @@ void stepElevator(Building *b)
     {
         exitElevator(b->elevator);
         //refreshing waiting list
-        *(b->waitingLists + currentFloor) = enterElevator(b->elevator, *(b->waitingLists) + currentFloor);
+        *(b->waitingLists + currentFloor) = enterElevator(b->elevator, *(b->waitingLists + currentFloor));
     }
     else if(currentFloor > b->elevator->targetFloor){
         b->elevator->currentFloor--;
