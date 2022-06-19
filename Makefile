@@ -7,7 +7,7 @@ main.o: main.c
 person.o: person.c person.h
 	gcc -c person.c
 
-elevator.o: elevator.c elevator.h
+elevator.o: elevator.c person.o elevator.h
 	gcc -c elevator.c
 
 run: main

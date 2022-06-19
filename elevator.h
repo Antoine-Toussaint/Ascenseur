@@ -20,7 +20,7 @@ Elevator *create_elevator(int capacity, int currentFloor, PersonList *persons);
 Building *create_building(int nbFloor, Elevator *elevator, PersonList **waitingLists);
 
 PersonList* exitElevator(Elevator *e);
-PersonList* enterElevator(Elevator *e, PersonList *list);
+PersonList* enterElevator(Elevator *e, PersonList *waitingList);
 void stepElevator(Building *b);
 
 #endif
