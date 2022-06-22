@@ -80,7 +80,9 @@ PersonList* enterElevator(Elevator *e, PersonList *waitingList)
     while(occupation < e->capacity && waitingList)
     {
         e->persons = insert(waitingList->person, e->persons);
-        waitingList = waitingList->next;
+        PersonList *next = waitingList->next;
+        free(waitingList);
+        waitingList = next;
         occupation++;
     }
 
@@ -115,9 +117,12 @@ void freeElevator(Elevator *e)
     while(e->persons)
     {
         PersonList *next = e->persons->next;
+        free(e->persons->person);
         free(e->persons);
         e->persons = next;
     }
+
+    free(e);
 }
 
 void freeBuilding(Building *b)
