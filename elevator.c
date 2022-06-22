@@ -24,27 +24,6 @@ Building *create_building(int nbFloor, Elevator *elevator, PersonList **waitingL
 
 PersonList *exitElevator(Elevator *e)
 {
-    // PersonList *personsLeaving = NULL;
-    // PersonList *personsRemaining = NULL;
-    // PersonList *explorator = e->persons;
-
-    // while (explorator)
-    // {
-    //     if (explorator->person->dest == e->currentFloor)
-    //     {
-    //         personsLeaving = insert(explorator->person, personsLeaving);
-    //     }
-    //     else{
-    //         personsRemaining = insert(explorator->person, personsRemaining);
-    //     }
-
-    //     explorator = explorator->next;
-    // }
-
-    // e->persons = personsRemaining;
-
-    // return personsLeaving;
-
     PersonList *personsLeaving = NULL;
     //this permits to not re-create the list of persons remainingat each call
     //instead, it 'cuts' the lists of persons in the elevator,
@@ -114,7 +93,13 @@ void stepElevator(Building *b)
     
     if(currentFloor == b->elevator->targetFloor)
     {
-        exitElevator(b->elevator);
+        PersonList *persons_leaving = exitElevator(b->elevator);
+        while(persons_leaving)
+        {
+            PersonList *next = persons_leaving->next;
+            free(persons_leaving);
+            persons_leaving = next;
+        }
         //refreshing waiting list
         *(b->waitingLists + currentFloor) = enterElevator(b->elevator, *(b->waitingLists + currentFloor));
     }
@@ -123,4 +108,30 @@ void stepElevator(Building *b)
     }else{
         b->elevator->currentFloor++;
     }
+}
+
+void freeElevator(Elevator *e)
+{
+    while(e->persons)
+    {
+        PersonList *next = e->persons->next;
+        free(e->persons);
+        e->persons = next;
+    }
+}
+
+void freeBuilding(Building *b)
+{
+    freeElevator(b->elevator);
+    for (size_t i = 0; i < b->nbFloor; i++)
+    {
+        //freeing person lists
+        while(*(b->waitingLists + i))
+        {
+            PersonList *next = (*(b->waitingLists + i))->next;
+            free(*(b->waitingLists + i));
+            *(b->waitingLists + i) = next;
+        }
+    }
+    free(b);
 }

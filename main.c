@@ -62,7 +62,7 @@ int main() {
 
   // generate list of waiting persons
   int nbFloor = 5;
-PersonList **waitingLists = malloc(nbFloor*sizeof(PersonList*));
+  PersonList **waitingLists = malloc(nbFloor*sizeof(PersonList*));
   for(int currentFloor=0; currentFloor < nbFloor; currentFloor++) {
     waitingLists[currentFloor] = NULL;
     int nbPerson = 5; // 5 persons in the waiting list
@@ -113,6 +113,8 @@ PersonList **waitingLists = malloc(nbFloor*sizeof(PersonList*));
     wrefresh(win); // actual display function
 
   }
+
+  freeBuilding(building);
 
   endwin(); // correct ending of ncurses
 
